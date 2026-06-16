@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Wazzeat Console</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- OVERLAYS -->
+    <div id="login-overlay" class="hidden">
+        <div class="qr-box">
+            <h2 style="color:#008069; margin-bottom:20px;">Connexion WhatsApp</h2>
+            <img id="qr-image" src="" alt="Scan Me" style="width:250px; height:250px; margin-bottom:20px;">
+            <div id="status-badge" class="badge warning">Authentification Requise</div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU (clic droit sur message) -->
+    <div id="ctx-menu" class="ctx-menu hidden">
+        <div class="ctx-item" id="ctx-copy"><i class="fas fa-copy"></i> Copier</div>
+        <div class="ctx-item" id="ctx-reply"><i class="fas fa-reply"></i> Répondre</div>
+    </div>
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:40px; height:40px; background:#00a884; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:600; color:#111b21;">Console IA</div>
+                        <div id="sidebar-status" style="font-size:0.8rem; color:#00a884; font-weight:500;">● En ligne</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:15px; color:#54656f;">
+                    <abbr title="Admin Dashboard"><a href="vuepro.html" target="_blank" style="color:inherit;"><i class="fas fa-cog"></i></a></abbr>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="search-input" class="search-input" placeholder="Rechercher ou démarrer une discussion">
+                <div class="filter-bar">
+                    <button class="filter-chip active" data-filter="all">Tous</button>
+                    <button class="filter-chip" data-filter="unread">Non lus</button>
+                    <button class="filter-chip" data-filter="high">Urgents</button>
+                </div>
+            </div>
+
+            <div id="contact-list" class="contact-list"></div>
+        </aside>
+
+        <!-- MAIN CHAT -->
+        <main class="main-chat">
+
+            <!-- HEADER -->
+            <header class="chat-header">
+                <div id="active-chat-info" style="display:flex; align-items:center; gap:15px; visibility:hidden; cursor:pointer;">
+                    <div class="contact-avatar" id="header-avatar" style="width:40px; height:40px;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div id="header-name" style="font-weight:500; font-size:1rem;">—</div>
+                        <div id="header-status" style="font-size:0.8rem; color:#667781;">
+                            <span id="typing-indicator" class="hidden">
+                                <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+                                <span style="margin-left:4px;"><span id="typing-agent">L'agent</span> est en train d'écrire...</span>
+                            </span>
+                            <span id="header-status-text">Cliquez pour infos contact</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMMAND BAR (Right) -->
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-right:10px; background:white; padding:5px 10px; border-radius:15px; border:1px solid #e9edef;">
+                        <span style="font-size:0.85rem; color:#54656f; font-weight:500;">IA Auto</span>
+                        <label class="switch" style="width:36px; height:20px; margin:0;">
+                            <input type="checkbox" id="ai-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <button class="cmd-btn btn-stop-ia" id="btn-stop-ia" title="Couper l'IA pour cette conversation">
+                        <i class="fas fa-hand-paper"></i> STOP IA
+                    </button>
+                    <button class="cmd-btn btn-relaunch-ia" id="btn-relaunch-ia" title="Forcer l'IA à analyser et répondre">
+                        <i class="fas fa-magic"></i> Relancer IA
+                    </button>
+                    <button class="cmd-btn btn-resolve" id="btn-resolve" title="Marquer comme résolu">
+                        <i class="fas fa-check-circle"></i> Résolu
+                    </button>
+                    <button class="cmd-btn btn-delete" id="btn-delete" title="Supprimer la conversation">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="cmd-btn btn-info-panel" id="btn-info-panel" title="Infos contact / CRM" style="background:#fff;color:#54656f;border:1px solid #e9edef;">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MESSAGES (wrapper pour le bouton scroll) -->
+            <div class="messages-wrapper">
+                <div id="messages-area" class="messages-area">
+                    <div id="empty-chat-placeholder" style="text-align:center; margin-top:150px; color:#8696a0;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="80" style="opacity:0.3; margin-bottom:20px;">
+                        <h2 style="font-weight:300; color:#41525d;">Wazzeat</h2>
+                        <p>Réservations et commandes gérées automatiquement par l'assistant IA.<br>Sélectionnez une conversation pour commencer.</p>
+                    </div>
+                </div>
+
+                <!-- SCROLL TO BOTTOM BUTTON -->
+                <button id="scroll-bottom-btn" class="scroll-bottom-btn hidden" title="Aller en bas">
+                    <i class="fas fa-chevron-down"></i>
+                    <span id="scroll-badge" class="scroll-badge hidden">0</span>
+                </button>
+            </div>
+
+            <!-- FOOTER INPUT -->
+            <footer class="input-area">
+                <button class="input-icon-btn" title="Emoji"><i class="far fa-smile"></i></button>
+                <label class="input-icon-btn" title="Joindre un fichier" for="file-attach">
+                    <i class="fas fa-plus"></i>
+                </label>
+                <input type="file" id="file-attach" accept="image/*" style="display:none;">
+                <textarea id="chat-input" class="input-field" placeholder="Tapez un message" rows="1"></textarea>
+                <button id="send-btn" class="btn-send" title="Envoyer"><i class="fas fa-paper-plane"></i></button>
+            </footer>
+        </main>
+
+        <!-- CONTACT INFO PANEL (slide-in droit) -->
+        <aside id="contact-panel" class="contact-panel hidden">
+            <div class="cp-header">
+                <span style="font-weight:600; font-size:1rem;">Infos contact</span>
+                <button id="cp-close" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#54656f;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="cp-avatar-zone">
+                <div class="cp-avatar" id="cp-avatar">??</div>
+                <div class="cp-name" id="cp-name">—</div>
+                <div class="cp-phone" id="cp-phone">—</div>
+            </div>
+            <div class="cp-body">
+                <div class="cp-section">
+                    <div class="cp-label">Statut CRM</div>
+                    <div class="cp-value" id="cp-status">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">Priorité</div>
+                    <div class="cp-value" id="cp-priority">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">IA Active</div>
+                    <div class="cp-value" id="cp-ai">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">Dernière action</div>
+                    <div class="cp-value" id="cp-test">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">Notes</div>
+                    <div class="cp-value" id="cp-notes" style="white-space:pre-wrap; color:#3b4a54;">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">Nb de messages</div>
+                    <div class="cp-value" id="cp-msgcount">—</div>
+                </div>
+                <div class="cp-section">
+                    <div class="cp-label">Première interaction</div>
+                    <div class="cp-value" id="cp-firstmsg">—</div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="chat.js"></script>
+</body>
+
+</html>

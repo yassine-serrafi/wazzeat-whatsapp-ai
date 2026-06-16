@@ -1,0 +1,2 @@
+Base de connaissances Wazzeat — restaurant.
+Les informations utiles (menu, horaires, adresse, livraison) sont gérées via le dashboard VuePro et injectées automatiquement dans le cerveau de l assistant.

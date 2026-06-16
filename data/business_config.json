@@ -1,0 +1,13 @@
+{
+  "restaurantName": "Le Petit Régal",
+  "agentName": "Léo",
+  "currency": "€",
+  "phone": "01 23 45 67 89",
+  "address": "12 rue des Gourmets, 75011 Paris",
+  "hours": "Mar-Dim : 11h30-14h30 / 19h-22h30 (fermé le lundi)",
+  "deliveryZones": "Paris 11e, 12e, 20e (rayon 5 km)",
+  "deliveryFee": 3.5,
+  "minOrder": 15,
+  "avgPrepTime": "25 à 40 min",
+  "paymentNote": "Paiement à la livraison uniquement (espèces ou carte au livreur)"
+}

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  WAZZEAT — Documentation complète (page autonome, aucune dépendance externe
+  hormis la police Google Fonts). Tout le CSS et le JS sont inline pour que la
+  page fonctionne même hors-ligne / hors serveur.
+  Structure : sidebar de navigation (scrollspy) + contenu en sections ancrées.
+  ============================================================================
+-->
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wazzeat — Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===================== TOKENS DE DESIGN ===================== */
+        :root {
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --surface-2: #fbfbfd;
+            --ink: #14161c;
+            --ink-soft: #5b6472;
+            --ink-faint: #99a1ae;
+            --line: #ececf1;
+            --brand: #ff6a3d;
+            --brand-d: #e8521f;
+            --brand-soft: #fff2ec;
+            --green: #15a34a; --green-s: #e9f8ef;
+            --blue: #2563eb; --blue-s: #eaf1fe;
+            --amber: #c2740a; --amber-s: #fdf4e6;
+            --red: #dc2626; --red-s: #fdecec;
+            --violet: #7c3aed; --violet-s: #f2ecfe;
+            --radius: 16px;
+            --shadow: 0 4px 22px rgba(16,24,40,.06);
+            --shadow-lg: 0 18px 50px rgba(16,24,40,.13);
+            --sb: 280px;
+        }
+
+        /* ===================== RESET ===================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 30px; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg); color: var(--ink);
+            font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--brand-d); text-decoration: none; }
+        code, pre, .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+        /* ===================== SIDEBAR ===================== */
+        .sidebar {
+            position: fixed; inset: 0 auto 0 0; width: var(--sb);
+            background: var(--surface); border-right: 1px solid var(--line);
+            display: flex; flex-direction: column; z-index: 30;
+        }
+        .sb-brand { padding: 22px 22px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
+        .sb-logo {
+            width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--brand), #ff9a6b); color: #fff; font-size: 22px;
+            box-shadow: 0 6px 16px rgba(255,106,61,.4);
+        }
+        .sb-brand h1 { font-size: 18px; font-weight: 800; letter-spacing: -.4px; }
+        .sb-brand span { font-size: 11.5px; color: var(--ink-faint); font-weight: 500; }
+        .sb-nav { padding: 14px 12px; overflow-y: auto; flex: 1; }
+        .sb-group { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--ink-faint); padding: 14px 12px 6px; }
+        .sb-link {
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 9px;
+            color: var(--ink-soft); font-weight: 500; font-size: 13.5px; transition: .15s; margin-bottom: 1px;
+        }
+        .sb-link:hover { background: var(--surface-2); color: var(--ink); }
+        .sb-link.active { background: var(--brand-soft); color: var(--brand-d); font-weight: 600; }
+        .sb-link .e { width: 17px; text-align: center; }
+
+        /* ===================== LAYOUT PRINCIPAL ===================== */
+        .main { margin-left: var(--sb); }
+        .wrap { max-width: 920px; margin: 0 auto; padding: 0 36px 100px; }
+
+        /* ===================== HERO ===================== */
+        .hero {
+            position: relative; overflow: hidden; color: #fff;
+            background: radial-gradient(120% 140% at 0% 0%, #ff8254 0%, #ff6a3d 40%, #ef4f24 100%);
+            padding: 64px 36px 58px; margin-bottom: 40px;
+        }
+        .hero::after {
+            content: ""; position: absolute; right: -80px; top: -80px; width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(255,255,255,.22), transparent 70%); border-radius: 50%;
+        }
+        .hero .inner { max-width: 920px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero .tag { display: inline-block; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); padding: 5px 13px; border-radius: 30px; font-size: 12px; font-weight: 600; margin-bottom: 18px; }
+        .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1.2px; line-height: 1.1; }
+        .hero p { font-size: 17px; opacity: .95; margin-top: 14px; max-width: 640px; }
+        .hero .meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+        .hero .chip { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.25); padding: 7px 14px; border-radius: 10px; font-size: 13px; font-weight: 500; }
+
+        /* ===================== SECTIONS ===================== */
+        section { padding-top: 30px; margin-top: 18px; border-top: 1px solid var(--line); }
+        section:first-of-type { border-top: none; }
+        h2 { font-size: 27px; font-weight: 800; letter-spacing: -.6px; margin-bottom: 6px; scroll-margin-top: 24px; }
+        h2 .ico { margin-right: 8px; }
+        h3 { font-size: 18px; font-weight: 700; margin: 26px 0 10px; letter-spacing: -.3px; }
+        .lead { color: var(--ink-soft); font-size: 16px; margin-bottom: 14px; }
+        p { margin: 10px 0; }
+        ul, ol { margin: 10px 0 10px 22px; }
+        li { margin: 5px 0; }
+        strong { font-weight: 700; }
+
+        /* ===================== CARTES & GRILLES ===================== */
+        .grid { display: grid; gap: 16px; margin: 18px 0; }
+        .g2 { grid-template-columns: 1fr 1fr; }
+        .g3 { grid-template-columns: repeat(3, 1fr); }
+        @media (max-width: 760px){ .g2, .g3 { grid-template-columns: 1fr; } }
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
+        .card .ic { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; font-size: 20px; margin-bottom: 12px; background: var(--brand-soft); color: var(--brand-d); }
+        .card h4 { font-size: 15.5px; font-weight: 700; margin-bottom: 5px; }
+        .card p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+        /* ===================== CALLOUTS ===================== */
+        .note { border-radius: 12px; padding: 14px 16px 14px 18px; margin: 18px 0; border-left: 4px solid; font-size: 14px; }
+        .note b { display: block; margin-bottom: 3px; }
+        .note.info { background: var(--blue-s); border-color: var(--blue); }
+        .note.tip { background: var(--green-s); border-color: var(--green); }
+        .note.warn { background: var(--amber-s); border-color: var(--amber); }
+        .note.danger { background: var(--red-s); border-color: var(--red); }
+
+        /* ===================== CODE ===================== */
+        pre {
+            position: relative; background: #14161c; color: #e6e8ec; border-radius: 12px;
+            padding: 18px 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; margin: 14px 0;
+        }
+        pre .cmt { color: #7d8694; }
+        pre .key { color: #ff9a6b; }
+        pre .str { color: #8fd3a0; }
+        :not(pre) > code { background: var(--surface-2); border: 1px solid var(--line); padding: 1.5px 6px; border-radius: 6px; font-size: 12.5px; color: var(--brand-d); }
+        .copy { position: absolute; top: 9px; right: 9px; background: rgba(255,255,255,.08); color: #cfd4dc; border: 1px solid rgba(255,255,255,.14); border-radius: 7px; padding: 4px 9px; font-size: 11px; cursor: pointer; font-family: 'Inter'; }
+        .copy:hover { background: rgba(255,255,255,.16); }
+
+        /* ===================== TABLES ===================== */
+        .tbl { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .tbl th { text-align: left; background: var(--surface-2); padding: 11px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-faint); border-bottom: 1px solid var(--line); }
+        .tbl td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+        .tbl tr:last-child td { border-bottom: none; }
+        .tbl td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+
+        /* ===================== BADGES MÉTHODES HTTP ===================== */
+        .m { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 5px; display: inline-block; }
+        .m.get { background: var(--green-s); color: var(--green); }
+        .m.post { background: var(--blue-s); color: var(--blue); }
+        .m.del { background: var(--red-s); color: var(--red); }
+
+        /* ===================== FLOW (étapes) ===================== */
+        .flow { display: flex; flex-direction: column; gap: 0; margin: 18px 0; }
+        .step { display: flex; gap: 16px; }
+        .step .col { display: flex; flex-direction: column; align-items: center; }
+        .step .dot { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; box-shadow: 0 4px 12px rgba(255,106,61,.35); }
+        .step .bar { width: 2px; flex: 1; background: linear-gradient(var(--brand), var(--line)); min-height: 14px; }
+        .step:last-child .bar { display: none; }
+        .step .body { padding-bottom: 22px; }
+        .step .body h4 { font-size: 15px; font-weight: 700; }
+        .step .body p { font-size: 13.5px; color: var(--ink-soft); margin: 3px 0 0; }
+
+        /* ===================== KBD / PILLS ===================== */
+        kbd { background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 2px 7px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+        .pill { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 20px; padding: 3px 11px; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+
+        footer { margin-top: 50px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 13px; text-align: center; }
+
+        /* ===================== BULLES DE CHAT (exemples) ===================== */
+        .chat { background: #efeae2; background-image: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin: 16px 0; }
+        .chat .title { font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+        .bub { max-width: 78%; padding: 9px 13px; border-radius: 14px; margin: 7px 0; font-size: 13.5px; line-height: 1.5; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,.06); }
+        .bub.cli { background: #fff; border-top-left-radius: 4px; }
+        .bub.bot { background: #d9fdd3; margin-left: auto; border-top-right-radius: 4px; }
+        .bub .who { display: block; font-size: 10.5px; font-weight: 700; margin-bottom: 1px; opacity: .65; }
+        .bub.cli .who { color: var(--violet); }
+        .bub.bot .who { color: var(--green); }
+        .bub .sys { font-size: 10.5px; color: var(--brand-d); font-weight: 600; margin-top: 3px; }
+
+        /* ===================== CHECKLIST ===================== */
+        .check { list-style: none; margin-left: 0; }
+        .check li { display: flex; gap: 11px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+        .check li:last-child { border-bottom: none; }
+        .check .box { width: 22px; height: 22px; border-radius: 7px; background: var(--green-s); color: var(--green); display: grid; place-items: center; font-weight: 800; flex: none; font-size: 13px; }
+
+        /* ===================== MOBILE ===================== */
+        .burger { display: none; }
+        @media (max-width: 980px) {
+            .sidebar { transform: translateX(-100%); transition: .25s; box-shadow: var(--shadow-lg); }
+            .sidebar.open { transform: none; }
+            .main { margin-left: 0; }
+            .burger { display: grid; position: fixed; top: 14px; left: 14px; z-index: 40; width: 44px; height: 44px; place-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 11px; font-size: 18px; cursor: pointer; box-shadow: var(--shadow); }
+            .hero h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Bouton menu mobile -->
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+
+    <!-- ============================== SIDEBAR ============================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sb-brand">
+            <div class="sb-logo">🍽️</div>
+            <div>
+                <h1>Wazzeat</h1>
+                <span>Documentation v1.0</span>
+            </div>
+        </div>
+        <nav class="sb-nav" id="nav">
+            <div class="sb-group">Découvrir</div>
+            <a class="sb-link" href="#intro"><span class="e">📖</span> Présentation</a>
+            <a class="sb-link" href="#archi"><span class="e">🧱</span> Architecture</a>
+            <a class="sb-link" href="#stack"><span class="e">⚙️</span> Stack technique</a>
+
+            <div class="sb-group">Démarrer</div>
+            <a class="sb-link" href="#install"><span class="e">🚀</span> Installation</a>
+            <a class="sb-link" href="#config"><span class="e">🔧</span> Configuration</a>
+            <a class="sb-link" href="#whatsapp"><span class="e">📱</span> Connexion WhatsApp</a>
+            <a class="sb-link" href="#hosting"><span class="e">🖥️</span> Hébergement (RDP)</a>
+            <a class="sb-link" href="#antiban"><span class="e">🚫</span> Éviter le bannissement</a>
+
+            <div class="sb-group">Fonctionnement</div>
+            <a class="sb-link" href="#brain"><span class="e">🧠</span> Le cerveau IA</a>
+            <a class="sb-link" href="#flow"><span class="e">🔁</span> Parcours d'une réservation</a>
+            <a class="sb-link" href="#resa"><span class="e">📅</span> Réservations & Commandes</a>
+            <a class="sb-link" href="#menu"><span class="e">📷</span> Menu (OCR)</a>
+            <a class="sb-link" href="#modes"><span class="e">🎛️</span> Modes de service</a>
+
+            <div class="sb-group">Interfaces</div>
+            <a class="sb-link" href="#vuepro"><span class="e">📊</span> Dashboard VuePro</a>
+            <a class="sb-link" href="#telegram"><span class="e">🔔</span> Telegram</a>
+            <a class="sb-link" href="#advanced"><span class="e">🔬</span> Réglages avancés</a>
+
+            <div class="sb-group">Référence</div>
+            <a class="sb-link" href="#api"><span class="e">🔌</span> API REST</a>
+            <a class="sb-link" href="#socket"><span class="e">⚡</span> Temps réel (Socket)</a>
+            <a class="sb-link" href="#data"><span class="e">🗂️</span> Fichiers de données</a>
+            <a class="sb-link" href="#logs"><span class="e">📜</span> Journaux (Winston)</a>
+            <a class="sb-link" href="#security"><span class="e">🛡️</span> Sécurité & Reset</a>
+
+            <div class="sb-group">Aller plus loin</div>
+            <a class="sb-link" href="#examples"><span class="e">💬</span> Exemples de conversations</a>
+            <a class="sb-link" href="#bestpractices"><span class="e">✨</span> Bonnes pratiques</a>
+            <a class="sb-link" href="#prompting"><span class="e">🪄</span> Personnaliser le prompt</a>
+            <a class="sb-link" href="#checklist"><span class="e">✅</span> Checklist production</a>
+            <a class="sb-link" href="#glossary"><span class="e">📚</span> Glossaire</a>
+            <a class="sb-link" href="#faq"><span class="e">❓</span> Dépannage / FAQ</a>
+        </nav>
+    </aside>
+
+    <!-- ============================== CONTENU ============================== -->
+    <div class="main">
+
+        <!-- HERO -->
+        <header class="hero">
+            <div class="inner">
+                <span class="tag">🤖 Assistant WhatsApp IA pour restaurants</span>
+                <h1>La documentation Wazzeat</h1>
+                <p>Un agent commercial intelligent qui discute sur WhatsApp, prend les réservations sur place
+                   et les commandes en livraison, le tout piloté depuis un dashboard SaaS clé en main.</p>
+                <div class="meta">
+                    <span class="chip">⚡ Node.js + Express</span>
+                    <span class="chip">💬 WhatsApp (Baileys)</span>
+                    <span class="chip">🧠 OpenAI GPT‑4o</span>
+                    <span class="chip">📲 Telegram</span>
+                    <span class="chip">🔌 Socket.io</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="wrap">
+
+            <!-- ====================== PRÉSENTATION ====================== -->
+            <section id="intro">
+                <h2><span class="ico">📖</span>Présentation</h2>
+                <p class="lead">Wazzeat transforme un simple numéro WhatsApp en un véritable assistant de salle &amp; de livraison, disponible 24h/24.</p>
+                <p>Concrètement, un client écrit au restaurant sur WhatsApp comme à un humain. L'assistant (dont vous choisissez le prénom)
+                   répond avec un ton naturel, renseigne sur la carte, les horaires et la zone de livraison, puis <strong>enregistre la réservation
+                   ou la commande</strong> automatiquement. Chaque action remonte en direct dans le dashboard et déclenche une notification Telegram pour l'équipe.</p>
+
+                <div class="grid g3">
+                    <div class="card"><div class="ic">📅</div><h4>Réservations sur place</h4><p>Collecte date, heure, couverts et nom, puis confirme et notifie l'équipe.</p></div>
+                    <div class="card"><div class="ic">🛵</div><h4>Commandes en livraison</h4><p>Plats, adresse, téléphone, total calculé — paiement à la livraison uniquement.</p></div>
+                    <div class="card"><div class="ic">🗣️</div><h4>Ton 100% humain</h4><p>Messages courts, chaleureux, dans la langue du client, sans jamais paraître robotique.</p></div>
+                    <div class="card"><div class="ic">📷</div><h4>Menu par photo</h4><p>Photographiez la carte : l'IA la numérise (OCR) et remplit le menu.</p></div>
+                    <div class="card"><div class="ic">🎛️</div><h4>Tout paramétrable</h4><p>Agent, menu, horaires, livraison, clés API, modèle IA, timings… depuis VuePro.</p></div>
+                    <div class="card"><div class="ic">🔔</div><h4>Pilotage Telegram</h4><p>Alertes en temps réel et contrôle du service à distance.</p></div>
+                </div>
+
+                <div class="note tip"><b>💡 En une phrase</b> Vous configurez votre restaurant en quelques minutes, et l'assistant gère vos clients sur WhatsApp pendant que vous cuisinez.</div>
+            </section>
+
+            <!-- ====================== ARCHITECTURE ====================== -->
+            <section id="archi">
+                <h2><span class="ico">🧱</span>Architecture</h2>
+                <p class="lead">Une application Node.js unique, modulaire et temps réel.</p>
+                <pre><span class="cmt"># Vue d'ensemble du flux de données</span>
+
+   Client WhatsApp
+        │  (message)
+        ▼
+ ┌──────────────────┐     ┌───────────────────────┐
+ │   Baileys (WA)   │────▶│   server.js (moteur)  │
+ │  réception/envoi │     │  collecte • CRM • IA  │
+ └──────────────────┘     └───────────┬───────────┘
+        ▲                              │
+        │ (réponse)        ┌───────────┼───────────────┐
+        └──────────────────┘           ▼               ▼
+                              ┌──────────────┐  ┌──────────────┐
+                              │ OpenAI GPT‑4o│  │  telegram.js │
+                              │  (le cerveau)│  │ alertes/ctrl │
+                              └──────────────┘  └──────────────┘
+                                       │
+                         Socket.io ◀───┴───▶  Dashboard VuePro + Chat
+                          (temps réel)        (public/*.html)</pre>
+
+                <h3>Les briques principales</h3>
+                <table class="tbl">
+                    <tr><th>Fichier</th><th>Rôle</th></tr>
+                    <tr><td class="mono">server.js</td><td>Le moteur : connexion WhatsApp, collecte des messages, CRM, appels IA, routes API, Socket.io.</td></tr>
+                    <tr><td class="mono">telegram.js</td><td>Bot Telegram : notifications (réservations, commandes, alertes) et commandes de pilotage.</td></tr>
+                    <tr><td class="mono">logger.js</td><td>Journalisation (Winston) avec rotation quotidienne des fichiers de log.</td></tr>
+                    <tr><td class="mono">public/index.html<br>+ chat.js</td><td>Interface de chat « façon WhatsApp Web » pour superviser/reprendre les conversations.</td></tr>
+                    <tr><td class="mono">public/vuepro.html<br>+ vuepro.js / .css</td><td>Le dashboard SaaS d'administration (réservations, commandes, menu, config…).</td></tr>
+                    <tr><td class="mono">data/</td><td>Toutes les données et configurations persistées en JSON (voir §&nbsp;Fichiers de données).</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== STACK ====================== -->
+            <section id="stack">
+                <h2><span class="ico">⚙️</span>Stack technique</h2>
+                <div class="grid g2">
+                    <div class="card"><h4>Runtime &amp; serveur</h4><p><strong>Node.js</strong>, <strong>Express</strong> (API + fichiers statiques), <strong>Socket.io</strong> (temps réel).</p></div>
+                    <div class="card"><h4>WhatsApp</h4><p><strong>@whiskeysockets/baileys</strong> — connexion non‑officielle via QR, envoi/réception, simulation de présence (« en train d'écrire »).</p></div>
+                    <div class="card"><h4>Intelligence artificielle</h4><p><strong>OpenAI</strong> : GPT‑4o (réponses + vision OCR du menu), GPT‑4o‑mini (analyses), Whisper (transcription audio).</p></div>
+                    <div class="card"><h4>Notifications</h4><p><strong>node-telegram-bot-api</strong> — alertes et télécommande du service.</p></div>
+                </div>
+                <div class="note info"><b>ℹ️ Function calling</b> L'IA ne « tape » jamais de tags dans le texte : elle appelle une fonction structurée <code>send_response</code> renvoyant <code>message</code>, <code>actions</code> et des objets <code>reservation</code> / <code>order</code>. C'est plus fiable que du parsing de texte.</div>
+            </section>
+
+            <!-- ====================== INSTALLATION ====================== -->
+            <section id="install">
+                <h2><span class="ico">🚀</span>Installation &amp; démarrage</h2>
+                <ol>
+                    <li>Installer les dépendances :</li>
+                </ol>
+                <pre><span class="cmt"># Depuis la racine du projet</span>
+npm install</pre>
+                <ol start="2">
+                    <li>Créer le fichier <code>.env</code> à partir du modèle <code>.env.example</code> (voir section Configuration).</li>
+                    <li>Lancer le serveur :</li>
+                </ol>
+                <pre>npm start
+<span class="cmt"># → 🚀 Serveur Wazzeat démarré sur http://localhost:3000</span></pre>
+                <ol start="4">
+                    <li>Ouvrir les interfaces :</li>
+                </ol>
+                <table class="tbl">
+                    <tr><th>Interface</th><th>URL</th></tr>
+                    <tr><td>💬 Chat / connexion WhatsApp (QR)</td><td class="mono">http://localhost:3000/</td></tr>
+                    <tr><td>📊 Dashboard VuePro</td><td class="mono">http://localhost:3000/vuepro.html</td></tr>
+                    <tr><td>📖 Cette documentation</td><td class="mono">http://localhost:3000/documentation.html</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== CONFIGURATION ====================== -->
+            <section id="config">
+                <h2><span class="ico">🔧</span>Configuration</h2>
+                <p class="lead">Deux niveaux : les <strong>secrets</strong> dans <code>.env</code> et tout le <strong>paramétrage métier</strong> depuis le dashboard.</p>
+
+                <h3>1. Le fichier <code>.env</code> (secrets de base)</h3>
+                <pre><span class="key">OPENAI_API_KEY</span>=<span class="str">sk-...</span>          <span class="cmt"># clé OpenAI</span>
+<span class="key">PORT</span>=<span class="str">3000</span>                  <span class="cmt"># port du serveur</span>
+<span class="key">TELEGRAM_BOT_TOKEN</span>=<span class="str">123:ABC...</span>  <span class="cmt"># token @BotFather</span>
+<span class="key">TELEGRAM_CHAT_ID</span>=<span class="str">123456789</span>    <span class="cmt"># votre Chat ID Telegram</span></pre>
+
+                <div class="note tip"><b>💡 Bon à savoir</b> Les clés OpenAI et Telegram peuvent aussi être saisies <strong>directement dans VuePro</strong> (onglet « Telegram &amp; Coûts »). Ces valeurs <strong>surchargent</strong> le <code>.env</code> ; si elles sont vides, le système retombe automatiquement sur le <code>.env</code>.</div>
+
+                <h3>2. Configuration du restaurant (onglet « Configuration »)</h3>
+                <table class="tbl">
+                    <tr><th>Champ</th><th>Description</th></tr>
+                    <tr><td class="mono">restaurantName</td><td>Nom du restaurant.</td></tr>
+                    <tr><td class="mono">agentName</td><td><strong>Prénom de l'agent</strong> que l'IA utilise face aux clients.</td></tr>
+                    <tr><td class="mono">address / phone</td><td>Adresse et téléphone communiqués sur demande.</td></tr>
+                    <tr><td class="mono">hours</td><td>Horaires d'ouverture (texte libre).</td></tr>
+                    <tr><td class="mono">deliveryZones</td><td>Zone de livraison desservie.</td></tr>
+                    <tr><td class="mono">deliveryFee / minOrder</td><td>Frais de livraison et montant minimum de commande.</td></tr>
+                    <tr><td class="mono">avgPrepTime</td><td>Délai moyen de préparation/livraison.</td></tr>
+                    <tr><td class="mono">paymentNote</td><td>Note de paiement (par défaut : à la livraison uniquement).</td></tr>
+                </table>
+                <p>Toutes ces valeurs sont <strong>injectées automatiquement</strong> dans le cerveau de l'IA à chaque message — l'assistant connaît donc toujours les infos à jour.</p>
+            </section>
+
+            <!-- ====================== WHATSAPP ====================== -->
+            <section id="whatsapp">
+                <h2><span class="ico">📱</span>Connexion WhatsApp</h2>
+                <div class="flow">
+                    <div class="step"><div class="col"><div class="dot">1</div><div class="bar"></div></div><div class="body"><h4>Lancer le serveur</h4><p><code>npm start</code> puis ouvrir <span class="mono">http://localhost:3000/</span>.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">2</div><div class="bar"></div></div><div class="body"><h4>Scanner le QR code</h4><p>Sur le téléphone : WhatsApp → Appareils connectés → Associer un appareil → scanner le QR affiché.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">3</div><div class="bar"></div></div><div class="body"><h4>Connexion établie</h4><p>La session est sauvegardée dans <code>data/auth_info/</code>. Le badge passe à « WhatsApp connecté ».</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">4</div></div><div class="body"><h4>C'est parti</h4><p>L'assistant répond désormais automatiquement aux messages entrants.</p></div></div>
+                </div>
+                <div class="note warn"><b>⚠️ Reconnexion automatique</b> Un « watchdog » surveille la connexion et relance automatiquement en cas de coupure. Si vous vous déconnectez via le bouton « logout », la session est effacée et un nouveau QR sera nécessaire.</div>
+            </section>
+
+            <!-- ====================== HÉBERGEMENT / RDP ====================== -->
+            <section id="hosting">
+                <h2><span class="ico">🖥️</span>Hébergement recommandé : RDP Windows</h2>
+                <p class="lead">Pour que l'assistant tourne <strong>24h/24, 7j/7</strong>, l'hébergement conseillé est un <strong>RDP Windows</strong> (un PC Windows distant, aussi appelé VPS Windows).</p>
+
+                <div class="note tip"><b>✅ Recommandation</b> Faire tourner Wazzeat sur un <strong>RDP/VPS Windows</strong> est la solution recommandée : la machine reste allumée en permanence, la connexion WhatsApp reste active, et vous pouvez fermer votre ordinateur personnel sans rien interrompre.</div>
+
+                <h3>Pourquoi un RDP Windows ?</h3>
+                <div class="grid g2">
+                    <div class="card"><div class="ic">🔌</div><h4>Toujours allumé</h4><p>Le serveur reste actif 24/7, même PC perso éteint. Indispensable pour ne manquer aucun message client.</p></div>
+                    <div class="card"><div class="ic">📶</div><h4>Connexion stable</h4><p>Réseau filaire de datacenter : la session WhatsApp reste connectée et le watchdog reconnecte automatiquement si besoin.</p></div>
+                    <div class="card"><div class="ic">🪟</div><h4>100 % compatible</h4><p>Le projet est conçu et testé sous Windows (PowerShell). Aucune adaptation nécessaire.</p></div>
+                    <div class="card"><div class="ic">🔐</div><h4>Isolé &amp; sécurisé</h4><p>Vos clés et la session WhatsApp restent sur une machine dédiée, séparée de votre poste personnel.</p></div>
+                </div>
+
+                <h3>Mise en place rapide</h3>
+                <div class="flow">
+                    <div class="step"><div class="col"><div class="dot">1</div><div class="bar"></div></div><div class="body"><h4>Louer un RDP / VPS Windows</h4><p>Choisir un RDP Windows (minimum ~2 vCPU / 4 Go RAM suffisent largement). Récupérer l'adresse IP, le nom d'utilisateur et le mot de passe.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">2</div><div class="bar"></div></div><div class="body"><h4>Se connecter en Bureau à distance</h4><p>Sur Windows : application <strong>« Connexion Bureau à distance »</strong> (mstsc) → saisir l'IP → s'authentifier.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">3</div><div class="bar"></div></div><div class="body"><h4>Installer Node.js</h4><p>Télécharger et installer <strong>Node.js (LTS)</strong> depuis nodejs.org sur le RDP.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">4</div><div class="bar"></div></div><div class="body"><h4>Copier le projet &amp; installer</h4><p>Transférer le dossier Wazzeat sur le RDP, puis dans le dossier : <code>npm install</code>.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">5</div><div class="bar"></div></div><div class="body"><h4>Lancer &amp; scanner le QR</h4><p><code>npm start</code>, ouvrir <span class="mono">http://localhost:3000/</span> dans le navigateur du RDP et scanner le QR avec le téléphone du restaurant.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">6</div></div><div class="body"><h4>Garder en marche en continu</h4><p>Laisser le serveur tourner. Vous pouvez fermer la fenêtre Bureau à distance (sans vous déconnecter) : le serveur continue de fonctionner sur le RDP.</p></div></div>
+                </div>
+
+                <div class="note warn"><b>⚠️ Garder le processus vivant</b> Ne fermez pas la fenêtre du serveur sur le RDP. Pour un fonctionnement robuste, vous pouvez lancer Wazzeat comme service Windows ou via un gestionnaire de processus (ex. <code>pm2</code>) afin qu'il redémarre automatiquement.</div>
+                <div class="note tip"><b>💡 Astuce</b> Le <strong>watchdog</strong> intégré relance la connexion WhatsApp en cas de coupure réseau — combiné à un RDP toujours allumé, l'assistant reste disponible en permanence.</div>
+            </section>
+
+            <!-- ====================== ANTI-BANNISSEMENT ====================== -->
+            <section id="antiban">
+                <h2><span class="ico">🚫</span>Éviter le bannissement WhatsApp</h2>
+                <p class="lead">WhatsApp détecte et bannit les comportements « robot ». La règle d'or : <strong>se comporter comme un humain</strong>.</p>
+
+                <div class="note danger"><b>⚠️ Important</b> WhatsApp est utilisé via une connexion non‑officielle. Un usage trop « machine » (réponses instantanées 24h/24, messages en masse, numéro neuf qui spamme) peut entraîner un <strong>bannissement du numéro</strong>. Les règles ci‑dessous réduisent fortement ce risque.</div>
+
+                <h3>1. Activer le mode dormir (simuler l'humain) 💤</h3>
+                <p>C'est la règle la plus importante : <strong>activez le mode « Restaurant fermé / dormir »</strong> la nuit. Un vrai humain ne répond pas à 3h du matin — un bot qui répond instantanément à toute heure est immédiatement suspect.</p>
+                <ul>
+                    <li>Dans VuePro → <strong>Réglages avancés → Fermeture automatique</strong>, activez la plage horaire (ex. fermeture à 23h, réouverture à 8h).</li>
+                    <li>Ou à distance via Telegram : <code>/dormir</code> pour fermer, <code>/rev</code> pour rouvrir.</li>
+                    <li>Pendant le sommeil, l'assistant <strong>ne répond plus automatiquement</strong> et se met en retrait, exactement comme une personne qui dort.</li>
+                </ul>
+                <div class="note tip"><b>💡 Effet « humain »</b> Couplé aux délais de lecture/frappe simulés, ce rythme jour/nuit rend le comportement indistinguable d'un vrai employé.</div>
+
+                <h3>2. Les simulations humaines déjà intégrées</h3>
+                <p>Wazzeat imite naturellement un humain, sans rien configurer :</p>
+                <table class="tbl">
+                    <tr><th>Mécanisme</th><th>Effet anti‑robot</th></tr>
+                    <tr><td>⏳ <strong>Délai de lecture</strong></td><td>L'assistant « lit » le message quelques secondes avant de répondre.</td></tr>
+                    <tr><td>⌨️ <strong>Simulation de frappe</strong></td><td>Affiche « en train d'écrire… » proportionnellement à la longueur de la réponse.</td></tr>
+                    <tr><td>📥 <strong>Regroupement des messages</strong></td><td>Attend que le client finisse d'écrire au lieu de répondre à chaque ligne.</td></tr>
+                    <tr><td>🔁 <strong>Anti‑répétition</strong></td><td>Ne renvoie jamais deux fois le même message mot pour mot.</td></tr>
+                    <tr><td>💤 <strong>Mode dormir</strong></td><td>Pas de réponse la nuit (voir ci‑dessus).</td></tr>
+                </table>
+
+                <h3>3. Les bonnes pratiques côté numéro</h3>
+                <ul>
+                    <li><strong>Numéro dédié</strong> : utilisez un numéro réservé au restaurant, jamais votre numéro personnel principal.</li>
+                    <li><strong>Chauffer le numéro</strong> : un numéro tout neuf qui envoie beaucoup de messages d'un coup est suspect. Montez en charge progressivement.</li>
+                    <li><strong>Répondre, ne pas démarcher</strong> : l'assistant répond aux clients qui écrivent en premier. Évitez l'envoi massif de messages non sollicités (campagnes de masse).</li>
+                    <li><strong>Volume raisonnable</strong> : gardez un rythme cohérent avec une activité de restaurant réelle.</li>
+                    <li><strong>Profil crédible</strong> : nom/photo du restaurant sur le compte WhatsApp Business.</li>
+                    <li><strong>Pas d'envois identiques en masse</strong> : variez les formulations (l'IA le fait déjà naturellement).</li>
+                </ul>
+
+                <div class="note warn"><b>⚠️ En cas de doute</b> Si le numéro montre des signes de limitation, réduisez le volume, activez le mode dormir plus largement, et laissez « reposer » le numéro quelques heures.</div>
+            </section>
+
+            <!-- ====================== CERVEAU IA ====================== -->
+            <section id="brain">
+                <h2><span class="ico">🧠</span>Le cerveau IA</h2>
+                <p class="lead">À chaque message, un « prompt système » dynamique est construit puis envoyé à OpenAI.</p>
+                <p>Ce prompt assemble en temps réel :</p>
+                <ul>
+                    <li><strong>L'état du service</strong> (normal / forte affluence / commandes en pause / fermé).</li>
+                    <li><strong>L'identité &amp; la personnalité</strong> de l'agent (éditable dans « Cerveau IA »).</li>
+                    <li><strong>Les infos du restaurant</strong> (adresse, horaires, livraison, paiement).</li>
+                    <li><strong>La carte complète</strong> avec les prix, depuis <code>menu.json</code>.</li>
+                    <li><strong>Les règles de conduite</strong> : ton humain, messages courts, miroir linguistique, anti‑répétition, escalade humaine.</li>
+                </ul>
+                <div class="note info"><b>ℹ️ Le prompt de base est éditable</b> Dans l'onglet « Cerveau IA » de VuePro, vous ajustez la personnalité. Les infos resto et le menu sont injectés <strong>par‑dessus</strong> automatiquement — vous n'avez pas à les recopier.</div>
+
+                <h3>Les actions que l'IA peut déclencher</h3>
+                <table class="tbl">
+                    <tr><th>Action</th><th>Effet</th><th>Données structurées</th></tr>
+                    <tr><td><span class="pill">RESERVATION</span></td><td>Enregistre une réservation sur place.</td><td class="mono">{date, time, guests, name}</td></tr>
+                    <tr><td><span class="pill">ORDER</span></td><td>Enregistre une commande livraison.</td><td class="mono">{items[], address, phone, total}</td></tr>
+                    <tr><td><span class="pill">ALERT</span></td><td>Demande une intervention humaine (réclamation, cas sensible).</td><td>—</td></tr>
+                    <tr><td><span class="pill">LANG_DETECTED</span></td><td>Signale une langue étrangère détectée.</td><td class="mono">"EN" / "AR" / "ES"…</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== FLOW RÉSERVATION ====================== -->
+            <section id="flow">
+                <h2><span class="ico">🔁</span>Parcours d'une réservation</h2>
+                <p class="lead">Du « bonjour » jusqu'à l'enregistrement complet, vérifié de bout en bout.</p>
+                <div class="flow">
+                    <div class="step"><div class="col"><div class="dot">1</div><div class="bar"></div></div><div class="body"><h4>Le client écrit</h4><p>« Slt, je veux réserver une table ». Les messages rapprochés sont <strong>regroupés</strong> (collecteur) pour une réponse cohérente.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">2</div><div class="bar"></div></div><div class="body"><h4>L'assistant collecte</h4><p>Il demande, <strong>une info à la fois</strong> : le jour, l'heure, le nombre de personnes, puis le nom.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">3</div><div class="bar"></div></div><div class="body"><h4>Récapitulatif &amp; confirmation</h4><p>« Je te note pour 4 personnes vendredi à 20h au nom de Karim, c'est bien ça ? » → action <span class="pill">RESERVATION</span>.</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">4</div><div class="bar"></div></div><div class="body"><h4>Enregistrement</h4><p>La réservation est écrite dans <code>reservations.json</code>, la fiche CRM mise à jour, et le tag retiré du message (le client ne voit rien de technique).</p></div></div>
+                    <div class="step"><div class="col"><div class="dot">5</div></div><div class="body"><h4>Diffusion temps réel</h4><p>Elle apparaît instantanément dans VuePro (onglet Réservations) <strong>et</strong> déclenche une notification Telegram à l'équipe. 🔔</p></div></div>
+                </div>
+                <div class="note tip"><b>💡 Même logique pour la livraison</b> Plats + adresse + téléphone → récap avec total (plats + frais) → <span class="pill">ORDER</span> → onglet Commandes + alerte Telegram. Le paiement est <strong>toujours</strong> à la livraison.</div>
+            </section>
+
+            <!-- ====================== RÉSERVATIONS & COMMANDES ====================== -->
+            <section id="resa">
+                <h2><span class="ico">📅</span>Réservations &amp; Commandes</h2>
+                <p>Chaque entrée est suivie via un <strong>statut</strong> modifiable directement dans le dashboard.</p>
+                <div class="grid g2">
+                    <div class="card"><div class="ic">📅</div><h4>Réservations</h4><p>Statuts : <span class="pill">En attente</span> → <span class="pill">Confirmée</span> → <span class="pill">Terminée</span>. Suppression possible.</p></div>
+                    <div class="card"><div class="ic">🛵</div><h4>Commandes</h4><p>Statuts : <span class="pill">En attente</span> → <span class="pill">Livrée</span> / <span class="pill">Annulée</span>. Total et paiement à la livraison affichés.</p></div>
+                </div>
+                <div class="note info"><b>ℹ️ Garde‑fou commandes</b> Si le mode « Commandes en pause » ou « Service interrompu » est actif, aucune nouvelle commande livraison n'est enregistrée, même si l'IA reçoit la demande.</div>
+            </section>
+
+            <!-- ====================== MENU ====================== -->
+            <section id="menu">
+                <h2><span class="ico">📷</span>Gestion du menu</h2>
+                <p class="lead">Deux façons de remplir la carte, depuis l'onglet « Menu / Carte ».</p>
+                <div class="grid g2">
+                    <div class="card"><div class="ic">📷</div><h4>Par photo (OCR)</h4><p>Vous envoyez une photo de la carte. GPT‑4o Vision l'analyse et propose une liste structurée de plats (catégorie, nom, description, prix) que vous validez.</p></div>
+                    <div class="card"><div class="ic">✍️</div><h4>Manuelle</h4><p>Ajout / édition / suppression de plats ligne par ligne, puis « Enregistrer le menu ».</p></div>
+                </div>
+                <p>Le menu enregistré est <strong>immédiatement</strong> connu de l'IA : prix, descriptions et catégories sont injectés dans chaque réponse.</p>
+                <div class="note tip"><b>💡 Astuce qualité</b> Une photo nette et bien cadrée améliore nettement la précision de l'OCR. Vérifiez toujours les prix proposés avant d'enregistrer.</div>
+            </section>
+
+            <!-- ====================== MODES ====================== -->
+            <section id="modes">
+                <h2><span class="ico">🎛️</span>Modes de service</h2>
+                <p>Pilotables depuis VuePro (Centre de contrôle) <strong>ou</strong> Telegram.</p>
+                <table class="tbl">
+                    <tr><th>Mode</th><th>Comportement de l'assistant</th></tr>
+                    <tr><td>🛑 <strong>Service interrompu</strong></td><td>Cuisine à l'arrêt : n'accepte plus aucune commande/réservation, s'excuse et propose de rappeler plus tard.</td></tr>
+                    <tr><td>⏸️ <strong>Commandes en pause</strong></td><td>Cuisine saturée : renseigne encore le client mais n'enregistre plus de commande livraison. Propose la réservation.</td></tr>
+                    <tr><td>🐢 <strong>Forte affluence</strong></td><td>Annonce un délai de livraison rallongé (≈ 1h–1h30).</td></tr>
+                    <tr><td>💤 <strong>Restaurant fermé</strong></td><td>Mode sommeil : l'assistant ne répond plus automatiquement (plage horaire configurable).</td></tr>
+                    <tr><td>💀 <strong>Kill switch</strong></td><td>Coupe totalement l'IA — silence absolu sur toutes les conversations.</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== VUEPRO ====================== -->
+            <section id="vuepro">
+                <h2><span class="ico">📊</span>Dashboard VuePro</h2>
+                <p class="lead">Le centre de pilotage, pensé comme un SaaS moderne.</p>
+                <div class="grid g3">
+                    <div class="card"><h4>📊 Vue générale</h4><p>Commandes &amp; réservations du jour, CA estimé, conversations, graphe 7 jours, flux d'activité.</p></div>
+                    <div class="card"><h4>📅 Réservations</h4><p>Tableau live avec gestion des statuts.</p></div>
+                    <div class="card"><h4>🛵 Commandes</h4><p>Journal des livraisons + totaux.</p></div>
+                    <div class="card"><h4>📖 Menu / Carte</h4><p>OCR + éditeur manuel.</p></div>
+                    <div class="card"><h4>⚙️ Configuration</h4><p>Identité resto, <strong>nom de l'agent</strong>, livraison, paiement.</p></div>
+                    <div class="card"><h4>🧠 Cerveau IA</h4><p>Édition du prompt système.</p></div>
+                    <div class="card"><h4>🎛️ Centre de contrôle</h4><p>Modes de service + simulateur de conversation.</p></div>
+                    <div class="card"><h4>🔬 Réglages avancés</h4><p>Modèle IA, timings, horaires, zone de danger.</p></div>
+                    <div class="card"><h4>🔔 Telegram &amp; Coûts</h4><p>Clés API, statut du bot, suivi des coûts OpenAI.</p></div>
+                </div>
+            </section>
+
+            <!-- ====================== TELEGRAM ====================== -->
+            <section id="telegram">
+                <h2><span class="ico">🔔</span>Telegram</h2>
+                <h3>Notifications automatiques</h3>
+                <p>Réservations, commandes, demandes d'intervention humaine, langues étrangères, leads chauds, alertes de coût, et changements d'état du service.</p>
+                <h3>Commandes de pilotage</h3>
+                <table class="tbl">
+                    <tr><th>Commande</th><th>Effet</th></tr>
+                    <tr><td class="mono">/help</td><td>Liste toutes les commandes.</td></tr>
+                    <tr><td class="mono">/status</td><td>État complet du système.</td></tr>
+                    <tr><td class="mono">/ping</td><td>Vérifie que l'assistant est en ligne.</td></tr>
+                    <tr><td class="mono">/stop · /start</td><td>Couper / relancer l'assistant (kill switch).</td></tr>
+                    <tr><td class="mono">/panic · /panicoff</td><td>Service interrompu / repris.</td></tr>
+                    <tr><td class="mono">/slow · /slowoff</td><td>Forte affluence / retour normal.</td></tr>
+                    <tr><td class="mono">/testnone · /gotest</td><td>Mettre en pause / rouvrir les commandes.</td></tr>
+                    <tr><td class="mono">/dormir · /rev</td><td>Fermer / rouvrir le restaurant (sommeil).</td></tr>
+                    <tr><td class="mono">/rapport</td><td>Génère le rapport journalier immédiatement.</td></tr>
+                    <tr><td class="mono">/ventes</td><td>Affiche les 5 dernières commandes.</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== AVANCÉ ====================== -->
+            <section id="advanced">
+                <h2><span class="ico">🔬</span>Réglages avancés</h2>
+                <table class="tbl">
+                    <tr><th>Réglage</th><th>Rôle</th><th>Défaut</th></tr>
+                    <tr><td class="mono">aiModel</td><td>Modèle OpenAI des réponses clients.</td><td class="mono">gpt-4o</td></tr>
+                    <tr><td class="mono">aiTemperature</td><td>Créativité (0 = strict, 1+ = créatif).</td><td class="mono">0.65</td></tr>
+                    <tr><td class="mono">aiMaxTokens</td><td>Longueur maximale d'une réponse.</td><td class="mono">500</td></tr>
+                    <tr><td class="mono">simulateTyping</td><td>Délai « humain » avant l'envoi.</td><td class="mono">true</td></tr>
+                    <tr><td class="mono">collectorDelaySec</td><td>Regroupement des messages rapprochés.</td><td class="mono">7</td></tr>
+                    <tr><td class="mono">maxWaitSec</td><td>Attente max avant de répondre malgré tout.</td><td class="mono">20</td></tr>
+                    <tr><td class="mono">idleCooldownMin</td><td>Silence avant un message proactif Telegram.</td><td class="mono">120</td></tr>
+                    <tr><td class="mono">notifCooldownMin</td><td>Anti‑spam des notifications.</td><td class="mono">5</td></tr>
+                </table>
+                <div class="note tip"><b>💡 Modifiable à chaud</b> Ces réglages sont appliqués immédiatement, sans redémarrer le serveur. Les valeurs sont bornées côté serveur pour éviter toute config dangereuse.</div>
+            </section>
+
+            <!-- ====================== API ====================== -->
+            <section id="api">
+                <h2><span class="ico">🔌</span>Référence API REST</h2>
+                <p class="lead">Toutes les routes sont servies par <code>server.js</code> sous <code>/api</code>.</p>
+
+                <h3>Configuration &amp; menu</h3>
+                <table class="tbl">
+                    <tr><th>Méthode</th><th>Route</th><th>Description</th></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/config</td><td>Lit la config restaurant.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/config</td><td>Met à jour la config restaurant.</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/appconfig</td><td>Lit les réglages avancés (IA, timings).</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/appconfig</td><td>Met à jour les réglages avancés.</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/menu</td><td>Lit la carte.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/menu</td><td>Enregistre la carte.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/menu/ocr</td><td>OCR d'une photo de menu (image base64) → liste de plats.</td></tr>
+                    <tr><td><span class="m get">GET</span> / <span class="m post">POST</span></td><td class="mono">/api/prompt</td><td>Lit / enregistre le prompt système.</td></tr>
+                </table>
+
+                <h3>Réservations, commandes &amp; CRM</h3>
+                <table class="tbl">
+                    <tr><th>Méthode</th><th>Route</th><th>Description</th></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/reservations</td><td>Liste + statistiques des réservations.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/reservations/:id/status</td><td>Change le statut d'une réservation.</td></tr>
+                    <tr><td><span class="m del">DEL</span></td><td class="mono">/api/reservations/:id</td><td>Supprime une réservation.</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/orders</td><td>Liste des commandes.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/orders/:id/status</td><td>Change le statut d'une commande.</td></tr>
+                    <tr><td><span class="m del">DEL</span></td><td class="mono">/api/orders/:index</td><td>Supprime une commande.</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/stats</td><td>Statistiques du dashboard (ventes, graphe 7j, uptime…).</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/crm</td><td>Lit les fiches CRM.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/crm/update</td><td>Met à jour un ticket.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/crm/clear</td><td>Vide les tickets non résolus.</td></tr>
+                    <tr><td><span class="m del">DEL</span></td><td class="mono">/api/crm/:jid</td><td>Supprime un ticket.</td></tr>
+                </table>
+
+                <h3>Modes, simulateur &amp; Telegram</h3>
+                <table class="tbl">
+                    <tr><th>Méthode</th><th>Route</th><th>Description</th></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/simulate</td><td>Teste le cerveau sans WhatsApp (ne persiste pas).</td></tr>
+                    <tr><td><span class="m get">GET</span> / <span class="m post">POST</span></td><td class="mono">/api/sleep</td><td>Mode sommeil (activation + heures).</td></tr>
+                    <tr><td><span class="m get">GET</span> / <span class="m post">POST</span></td><td class="mono">/api/slowmode</td><td>Mode forte affluence.</td></tr>
+                    <tr><td><span class="m get">GET</span> / <span class="m post">POST</span></td><td class="mono">/api/panic</td><td>Service interrompu.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/logout</td><td>Déconnexion WhatsApp (efface la session).</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/telegram/status</td><td>Statut du bot Telegram.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/telegram/test</td><td>Envoie un message test sur Telegram.</td></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/ai/recommendations</td><td>Rapport stratégique IA sur les tickets chauds.</td></tr>
+                </table>
+
+                <h3>Secrets &amp; réinitialisation</h3>
+                <table class="tbl">
+                    <tr><th>Méthode</th><th>Route</th><th>Description</th></tr>
+                    <tr><td><span class="m get">GET</span></td><td class="mono">/api/settings</td><td>Lit les secrets <strong>masqués</strong> (jamais en clair).</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/settings</td><td>Enregistre clé OpenAI / Telegram (reconnexion à chaud).</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/settings/reset</td><td>Retire une surcharge (retour au .env).</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/settings/test-openai</td><td>Teste la validité de la clé OpenAI.</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/reset-data</td><td>Efface les données opérationnelles (sans toucher aux clés).</td></tr>
+                    <tr><td><span class="m post">POST</span></td><td class="mono">/api/reset-api</td><td>Supprime les clés OpenAI &amp; Telegram (sans toucher aux données).</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== SOCKET ====================== -->
+            <section id="socket">
+                <h2><span class="ico">⚡</span>Temps réel (Socket.io)</h2>
+                <h3>Serveur → client (le dashboard écoute)</h3>
+                <p>
+                    <span class="pill">status</span> <span class="pill">qr_code</span> <span class="pill">system_state</span>
+                    <span class="pill">config_update</span> <span class="pill">appconfig_update</span> <span class="pill">menu_update</span>
+                    <span class="pill">reservations_update</span> <span class="pill">new_order</span> <span class="pill">agent_feed</span>
+                    <span class="pill">init_crm</span> <span class="pill">init_history</span> <span class="pill">init_tv</span>
+                    <span class="pill">new_message</span> <span class="pill">ai_status</span> <span class="pill">crm_update</span> <span class="pill">conversation_deleted</span>
+                </p>
+                <h3>Client → serveur (le dashboard émet)</h3>
+                <p>
+                    <span class="pill">toggle_ai</span> <span class="pill">relaunch_ai</span> <span class="pill">manual_reply</span>
+                    <span class="pill">delete_conversation</span> <span class="pill">toggle_setting</span>
+                    <span class="pill">update_reservation_status</span> <span class="pill">update_order_status</span>
+                    <span class="pill">get_reservations</span> <span class="pill">check_ai_status</span>
+                </p>
+            </section>
+
+            <!-- ====================== DONNÉES ====================== -->
+            <section id="data">
+                <h2><span class="ico">🗂️</span>Fichiers de données</h2>
+                <p class="lead">Tout est persisté en JSON simple dans <code>data/</code> (écritures atomiques anti‑corruption).</p>
+                <table class="tbl">
+                    <tr><th>Fichier</th><th>Contenu</th></tr>
+                    <tr><td class="mono">business_config.json</td><td>Identité du restaurant + agent.</td></tr>
+                    <tr><td class="mono">app_config.json</td><td>Réglages avancés (IA, timings).</td></tr>
+                    <tr><td class="mono">menu.json</td><td>La carte (plats, prix, catégories).</td></tr>
+                    <tr><td class="mono">reservations.json</td><td>Réservations sur place.</td></tr>
+                    <tr><td class="mono">orders.json</td><td>Commandes en livraison.</td></tr>
+                    <tr><td class="mono">settings.json</td><td>Secrets surchargés (créé à la 1ʳᵉ sauvegarde dashboard).</td></tr>
+                    <tr><td class="mono">crm.json</td><td>Fiches clients / tickets.</td></tr>
+                    <tr><td class="mono">history.json</td><td>Historique des conversations.</td></tr>
+                    <tr><td class="mono">tv_history.json</td><td>Flux d'activité de l'agent.</td></tr>
+                    <tr><td class="mono">prompt.txt</td><td>Prompt système (personnalité de base).</td></tr>
+                    <tr><td class="mono">*_config.json</td><td>États des modes (sleep, panic, slow, kill…).</td></tr>
+                    <tr><td class="mono">auth_info/</td><td>Session WhatsApp (Baileys). À ne pas partager.</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== LOGS WINSTON ====================== -->
+            <section id="logs">
+                <h2><span class="ico">📜</span>Journaux (Winston)</h2>
+                <p class="lead">La journalisation est assurée par <strong>Winston</strong> (avec <code>winston-daily-rotate-file</code>) : un affichage couleur en console + des fichiers tournants dans le dossier <code>logs/</code>.</p>
+
+                <h3>Les sorties (transports)</h3>
+                <table class="tbl">
+                    <tr><th>Sortie</th><th>Contenu</th><th>Niveau</th><th>Rétention</th></tr>
+                    <tr><td><strong>Console</strong></td><td>Feedback en direct, colorisé (<code>HH:mm:ss</code>).</td><td class="mono">info</td><td>—</td></tr>
+                    <tr><td class="mono">logs/connection-AAAA-MM-JJ.log</td><td>Cycle de vie (connexion WhatsApp, événements).</td><td class="mono">info</td><td>14 jours</td></tr>
+                    <tr><td class="mono">logs/error-AAAA-MM-JJ.log</td><td>Uniquement les erreurs critiques.</td><td class="mono">error</td><td>30 jours</td></tr>
+                    <tr><td class="mono">logs/combined-AAAA-MM-JJ.log</td><td>Tous les logs combinés.</td><td class="mono">info</td><td>7 jours</td></tr>
+                </table>
+
+                <h3>Caractéristiques</h3>
+                <ul>
+                    <li><strong>Rotation quotidienne</strong> : un nouveau fichier par jour (<code>%DATE%</code>), les anciens sont purgés automatiquement.</li>
+                    <li><strong>Format fichier JSON</strong> : facile à analyser/parser par un outil tiers.</li>
+                    <li><strong>Format console lisible</strong> : horodatage + niveau colorisé + message (avec la <em>stack</em> en cas d'erreur).</li>
+                    <li><strong>Robuste</strong> : <code>exitOnError: false</code> — une erreur de logging ne fait jamais planter le serveur.</li>
+                </ul>
+
+                <pre><span class="cmt"># Exemple de ligne console</span>
+23:34:02 [info]: ✅ WhatsApp Connecté !
+
+<span class="cmt"># Exemple de ligne fichier (JSON)</span>
+{"level":"info","message":"🚀 Serveur Wazzeat démarré","timestamp":"2026-06-11 23:34:01"}</pre>
+
+                <div class="note tip"><b>💡 Où regarder en cas de souci ?</b> Consultez d'abord <code>logs/error-*.log</code> pour les erreurs, et <code>logs/connection-*.log</code> pour diagnostiquer un problème de connexion WhatsApp.</div>
+            </section>
+
+            <!-- ====================== SÉCURITÉ ====================== -->
+            <section id="security">
+                <h2><span class="ico">🛡️</span>Sécurité &amp; Réinitialisation</h2>
+                <div class="note danger"><b>🔐 Secrets</b> Les clés (OpenAI, Telegram) et le dossier <code>auth_info/</code> sont sensibles. Ne les partagez jamais et ne les versionnez pas. En cas de fuite, régénérez immédiatement les clés.</div>
+                <p>Le dashboard ne renvoie jamais les secrets en clair : seul un <strong>masque</strong> (ex. <code>sk-p••••xxxx</code>) et la source (<code>env</code> ou <code>dashboard</code>) sont exposés.</p>
+
+                <h3>Les deux boutons de la « Zone de danger »</h3>
+                <div class="grid g2">
+                    <div class="card"><div class="ic">🗑️</div><h4>RESET DATA</h4><p>Efface réservations, commandes, CRM, conversations et flux agent. <strong>Conserve</strong> le menu, la config et les clés API.</p></div>
+                    <div class="card"><div class="ic">🔑</div><h4>RESET API</h4><p>Supprime uniquement la clé OpenAI et les identifiants Telegram (retour au <code>.env</code>). <strong>Aucune donnée</strong> n'est touchée.</p></div>
+                </div>
+                <div class="note warn"><b>⚠️ Irréversible</b> Les deux actions demandent une double confirmation. Elles sont totalement indépendantes l'une de l'autre.</div>
+            </section>
+
+            <!-- ====================== EXEMPLES DE CONVERSATIONS ====================== -->
+            <section id="examples">
+                <h2><span class="ico">💬</span>Exemples de conversations</h2>
+                <p class="lead">Voici comment l'assistant se comporte réellement (extraits vérifiés).</p>
+
+                <h3>Demande d'info + réservation complète</h3>
+                <div class="chat">
+                    <div class="title">📅 Réservation sur place</div>
+                    <div class="bub cli"><span class="who">Client</span>slt vous êtes ouvert ce soir ?</div>
+                    <div class="bub bot"><span class="who">Léo</span>Salut ! Oui, on est ouvert ce soir jusqu'à 22h30. Tu veux que je te réserve une table ?</div>
+                    <div class="bub cli"><span class="who">Client</span>oui pour 4</div>
+                    <div class="bub bot"><span class="who">Léo</span>Parfait, c'est pour quelle heure ?</div>
+                    <div class="bub cli"><span class="who">Client</span>20h, au nom de Karim</div>
+                    <div class="bub bot"><span class="who">Léo</span>Je te note pour 4 personnes ce soir à 20h au nom de Karim, c'est bien ça ?<span class="sys">→ action RESERVATION · ajoutée au dashboard + alerte Telegram 🔔</span></div>
+                </div>
+
+                <h3>Commande livraison &amp; paiement</h3>
+                <div class="chat">
+                    <div class="title">🛵 Commande en livraison</div>
+                    <div class="bub cli"><span class="who">Client</span>je peux me faire livrer une pizza regina ?</div>
+                    <div class="bub bot"><span class="who">Léo</span>Bien sûr ! La Regina est à 13 €. C'est pour quelle adresse ?</div>
+                    <div class="bub cli"><span class="who">Client</span>12 rue Oberkampf. je paie par carte en ligne ?</div>
+                    <div class="bub bot"><span class="who">Léo</span>Le paiement se fait uniquement à la livraison, en espèces ou par carte au livreur. Tu me laisses un numéro pour le livreur ?</div>
+                </div>
+
+                <h3>Réclamation → escalade humaine</h3>
+                <div class="chat">
+                    <div class="title">⚠️ Cas sensible</div>
+                    <div class="bub cli"><span class="who">Client</span>ma commande d'hier n'est jamais arrivée, c'est inadmissible</div>
+                    <div class="bub bot"><span class="who">Léo</span>Je suis vraiment désolé pour ça. Je transmets tout de suite au responsable, il revient vers toi rapidement.<span class="sys">→ action ALERT · notification urgente envoyée à l'équipe</span></div>
+                </div>
+
+                <div class="note tip"><b>💡 À retenir</b> L'assistant ne « déballe » jamais tout d'un coup : il avance par petites questions, garde un ton chaleureux et reste concis, exactement comme un membre de l'équipe sur son téléphone.</div>
+            </section>
+
+            <!-- ====================== BONNES PRATIQUES ====================== -->
+            <section id="bestpractices">
+                <h2><span class="ico">✨</span>Bonnes pratiques</h2>
+                <div class="grid g2">
+                    <div class="card"><div class="ic">🍽️</div><h4>Gardez le menu à jour</h4><p>Des prix exacts = des réponses fiables. Ré‑importez la carte à chaque changement.</p></div>
+                    <div class="card"><div class="ic">🕐</div><h4>Renseignez les horaires précis</h4><p>L'IA s'appuie dessus pour accepter/refuser et annoncer les délais.</p></div>
+                    <div class="card"><div class="ic">🎛️</div><h4>Utilisez les modes au bon moment</h4><p>« Forte affluence » et « Commandes en pause » évitent les promesses intenables aux heures de rush.</p></div>
+                    <div class="card"><div class="ic">👀</div><h4>Surveillez via le chat</h4><p>Le chat permet de reprendre une conversation à la main (« STOP IA ») si un cas délicat l'exige.</p></div>
+                    <div class="card"><div class="ic">🤖</div><h4>Choisissez le bon modèle</h4><p><code>gpt-4o</code> pour la qualité et l'OCR, <code>gpt-4o-mini</code> pour réduire les coûts.</p></div>
+                    <div class="card"><div class="ic">💸</div><h4>Surveillez les coûts</h4><p>L'onglet « Coûts OpenAI » et les alertes Telegram (tous les 5 $) gardent le budget sous contrôle.</p></div>
+                </div>
+            </section>
+
+            <!-- ====================== PERSONNALISER LE PROMPT ====================== -->
+            <section id="prompting">
+                <h2><span class="ico">🪄</span>Personnaliser le prompt</h2>
+                <p class="lead">Le prompt (onglet « Cerveau IA ») définit la <strong>personnalité de base</strong>. Les infos resto et le menu sont ajoutés automatiquement par‑dessus.</p>
+                <h3>Conseils de rédaction</h3>
+                <ul>
+                    <li>Décrivez le <strong>ton</strong> souhaité (chaleureux, décontracté, élégant…).</li>
+                    <li>Précisez les <strong>spécialités</strong> ou arguments à mettre en avant.</li>
+                    <li>Indiquez ce qu'il <strong>ne doit pas faire</strong> (pas de promesses de délais précis, pas de remises non autorisées…).</li>
+                    <li>Restez concis : les règles techniques (réservation, commande, paiement) sont déjà gérées par le système.</li>
+                </ul>
+                <pre><span class="cmt"># Exemple de prompt personnalisé</span>
+Tu es l'assistant d'une trattoria familiale.
+Ton chaleureux et convivial, tutoiement, comme un membre de la famille.
+Mets en avant les pâtes fraîches maison et la pizza au feu de bois.
+Ne promets jamais d'heure de livraison exacte, reste sur une fourchette.
+Si on te demande un plat absent de la carte, propose une alternative proche.</pre>
+                <div class="note info"><b>ℹ️ Bac à sable</b> Testez vos changements sans risque grâce au <strong>Simulateur</strong> (Centre de contrôle) : il interroge le vrai cerveau mais n'enregistre rien.</div>
+            </section>
+
+            <!-- ====================== CHECKLIST PRODUCTION ====================== -->
+            <section id="checklist">
+                <h2><span class="ico">✅</span>Checklist de mise en production</h2>
+                <ul class="check">
+                    <li><span class="box">1</span><div><strong>Clés API</strong> — OpenAI valide (bouton « Tester la clé ») et clés régénérées si elles ont circulé.</div></li>
+                    <li><span class="box">2</span><div><strong>Bot Telegram</strong> — créé via @BotFather, token + Chat ID renseignés, « Envoyer un test » OK.</div></li>
+                    <li><span class="box">3</span><div><strong>Configuration restaurant</strong> — nom, agent, adresse, horaires, zone &amp; frais de livraison complétés.</div></li>
+                    <li><span class="box">4</span><div><strong>Menu</strong> — importé (OCR ou manuel) et prix vérifiés.</div></li>
+                    <li><span class="box">5</span><div><strong>Prompt</strong> — personnalité validée via le simulateur.</div></li>
+                    <li><span class="box">6</span><div><strong>WhatsApp</strong> — numéro connecté (QR scanné), conversation test envoyée.</div></li>
+                    <li><span class="box">7</span><div><strong>Horaires de fermeture</strong> — plage de sommeil configurée si besoin.</div></li>
+                    <li><span class="box">8</span><div><strong>Données de test</strong> — nettoyées via « RESET DATA » avant le vrai lancement.</div></li>
+                </ul>
+            </section>
+
+            <!-- ====================== GLOSSAIRE ====================== -->
+            <section id="glossary">
+                <h2><span class="ico">📚</span>Glossaire</h2>
+                <table class="tbl">
+                    <tr><th>Terme</th><th>Définition</th></tr>
+                    <tr><td><strong>Agent</strong></td><td>L'assistant IA incarné par un prénom configurable, qui discute avec les clients.</td></tr>
+                    <tr><td><strong>Baileys</strong></td><td>Bibliothèque assurant la connexion à WhatsApp via QR code.</td></tr>
+                    <tr><td><strong>Prompt système</strong></td><td>Les instructions envoyées à l'IA définissant son rôle et son comportement.</td></tr>
+                    <tr><td><strong>Function calling</strong></td><td>Mécanisme par lequel l'IA renvoie des actions structurées (réservation, commande…) plutôt que du texte libre.</td></tr>
+                    <tr><td><strong>CRM</strong></td><td>Fiche de suivi par client (statut, priorité, notes, historique).</td></tr>
+                    <tr><td><strong>Collecteur</strong></td><td>Mécanisme qui regroupe les messages rapprochés d'un client avant de répondre.</td></tr>
+                    <tr><td><strong>VuePro</strong></td><td>Le dashboard d'administration web de Wazzeat.</td></tr>
+                    <tr><td><strong>Watchdog</strong></td><td>Surveillance qui relance automatiquement la connexion WhatsApp en cas de coupure.</td></tr>
+                    <tr><td><strong>Kill switch</strong></td><td>Interrupteur qui coupe totalement les réponses de l'IA.</td></tr>
+                </table>
+            </section>
+
+            <!-- ====================== FAQ ====================== -->
+            <section id="faq">
+                <h2><span class="ico">❓</span>Dépannage / FAQ</h2>
+
+                <h3>L'assistant ne répond pas aux messages</h3>
+                <ul>
+                    <li>Vérifiez que <strong>WhatsApp est connecté</strong> (badge dans la sidebar).</li>
+                    <li>Vérifiez que le <strong>Kill switch</strong> n'est pas activé et que le restaurant n'est pas en mode « fermé ».</li>
+                    <li>Testez la <strong>clé OpenAI</strong> via le bouton « Tester la clé ».</li>
+                </ul>
+
+                <h3>Le QR code ne s'affiche pas</h3>
+                <p>Rafraîchissez <span class="mono">http://localhost:3000/</span>. Si le souci persiste, utilisez le bouton de déconnexion pour repartir d'une session vierge.</p>
+
+                <h3>Les notifications Telegram n'arrivent pas</h3>
+                <ul>
+                    <li>Vérifiez le <strong>token</strong> et le <strong>Chat ID</strong> dans l'onglet « Telegram &amp; Coûts ».</li>
+                    <li>Envoyez d'abord un message au bot depuis votre Telegram (sinon il ne peut pas vous écrire).</li>
+                    <li>Utilisez « Envoyer un test » pour valider.</li>
+                </ul>
+
+                <h3>L'OCR du menu rate des plats</h3>
+                <p>Utilisez une photo nette, bien éclairée et cadrée sur la carte. Vous pouvez toujours compléter manuellement avant d'enregistrer.</p>
+
+                <h3>Comment changer le prénom de l'agent ?</h3>
+                <p>Onglet <strong>Configuration</strong> → champ « Nom de l'agent commercial » → Enregistrer. Le changement est pris en compte immédiatement, y compris dans l'indicateur « est en train d'écrire ».</p>
+
+                <footer>
+                    🍽️ <strong>Wazzeat</strong> — Documentation générée pour la version 1.0 · Bon service !
+                </footer>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- ============================== SCRIPTS ==============================
+         JS minimal et autonome :
+          1) Scrollspy : surligne le lien de la section visible.
+          2) Smooth-scroll géré par CSS (scroll-behavior).
+          3) Boutons « copier » sur les blocs de code.
+          4) Menu burger sur mobile.
+    -->
+    <script>
+        // --- 1. Scrollspy ---
+        const links = [...document.querySelectorAll('.sb-link')];
+        const sections = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+        const spy = () => {
+            const y = window.scrollY + 120;
+            let current = sections[0];
+            for (const s of sections) { if (s.offsetTop <= y) current = s; }
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current.id));
+        };
+        window.addEventListener('scroll', spy, { passive: true });
+        window.addEventListener('load', spy);
+
+        // --- 2. Fermer la sidebar mobile au clic d'un lien ---
+        links.forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+        // --- 3. Boutons copier sur les <pre> ---
+        document.querySelectorAll('pre').forEach(pre => {
+            const btn = document.createElement('button');
+            btn.className = 'copy'; btn.textContent = 'Copier';
+            btn.addEventListener('click', () => {
+                const text = pre.innerText.replace(/^Copier\n?/, '');
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = 'Copié ✓';
+                    setTimeout(() => btn.textContent = 'Copier', 1500);
+                });
+            });
+            pre.appendChild(btn);
+        });
+
+        // --- 4. Menu burger ---
+        document.getElementById('burger').addEventListener('click', () =>
+            document.getElementById('sidebar').classList.toggle('open'));
+    </script>
+</body>
+
+</html>

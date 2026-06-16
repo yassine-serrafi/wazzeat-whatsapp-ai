@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wazzeat — VuePro</title>
+    <link rel="stylesheet" href="vuepro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;750&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">🍽️</div>
+                <div>
+                    <div class="brand-name">Wazzeat</div>
+                    <div class="brand-sub">VuePro · Dashboard</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <div class="nav-label">Pilotage</div>
+                <div class="nav-item active" data-page="overview"><span class="ic">📊</span> Vue générale</div>
+                <div class="nav-item" data-page="reservations"><span class="ic">📅</span> Réservations <span class="badge-count" id="nav-resa">0</span></div>
+                <div class="nav-item" data-page="orders"><span class="ic">🛵</span> Commandes <span class="badge-count" id="nav-orders">0</span></div>
+
+                <div class="nav-label">Restaurant</div>
+                <div class="nav-item" data-page="menu"><span class="ic">📖</span> Menu / Carte</div>
+                <div class="nav-item" data-page="config"><span class="ic">⚙️</span> Configuration</div>
+                <div class="nav-item" data-page="brain"><span class="ic">🧠</span> Cerveau IA</div>
+
+                <div class="nav-label">Système</div>
+                <div class="nav-item" data-page="controls"><span class="ic">🎛️</span> Centre de contrôle</div>
+                <div class="nav-item" data-page="advanced"><span class="ic">🔧</span> Réglages avancés</div>
+                <div class="nav-item" data-page="integrations"><span class="ic">🔔</span> Telegram &amp; Coûts</div>
+
+                <div class="nav-label">Aide</div>
+                <a class="nav-item" href="documentation.html" target="_blank" style="text-decoration:none;"><span class="ic">📖</span> Documentation</a>
+            </nav>
+
+            <div class="sidebar-foot">
+                <span class="dot" id="wa-dot"></span>
+                <span id="wa-status">Connexion…</span>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+            <header class="topbar">
+                <div>
+                    <h1 id="page-title">Vue générale</h1>
+                    <div class="sub" id="page-sub">Bienvenue sur votre tableau de bord Wazzeat</div>
+                </div>
+                <div class="topbar-actions">
+                    <span class="pill" id="agent-pill">🤖 Agent : <b id="agent-name-pill" style="margin-left:4px;">—</b></span>
+                    <a class="btn" href="/" target="_blank">💬 Ouvrir le chat</a>
+                </div>
+            </header>
+
+            <div class="content">
+
+                <!-- ============ OVERVIEW ============ -->
+                <section class="page active" id="page-overview">
+                    <div class="grid grid-4">
+                        <div class="stat">
+                            <div class="ic green">🛵</div>
+                            <div class="val" id="s-today-orders">0</div>
+                            <div class="lbl">Commandes aujourd'hui</div>
+                            <div class="sub" id="s-today-rev">0 € estimés</div>
+                        </div>
+                        <div class="stat">
+                            <div class="ic orange">📅</div>
+                            <div class="val" id="s-today-resa">0</div>
+                            <div class="lbl">Réservations en attente</div>
+                            <div class="sub" id="s-resa-total">0 au total</div>
+                        </div>
+                        <div class="stat">
+                            <div class="ic blue">💬</div>
+                            <div class="val" id="s-convos">0</div>
+                            <div class="lbl">Conversations</div>
+                            <div class="sub" id="s-tickets">0 à traiter</div>
+                        </div>
+                        <div class="stat">
+                            <div class="ic amber">✉️</div>
+                            <div class="val" id="s-msgs">0</div>
+                            <div class="lbl">Messages aujourd'hui</div>
+                            <div class="sub" id="s-uptime">uptime —</div>
+                        </div>
+                    </div>
+
+                    <div class="strip" id="status-strip"></div>
+
+                    <div class="grid grid-2" style="margin-top:18px;">
+                        <div class="card card-pad">
+                            <div class="section-head" style="margin:0 0 12px;">
+                                <h2>Activité 7 derniers jours</h2>
+                                <span class="muted" id="chart-total">0 €</span>
+                            </div>
+                            <div class="chart" id="chart"></div>
+                        </div>
+                        <div class="card card-pad">
+                            <div class="section-head" style="margin:0 0 6px;">
+                                <h2>Activité de l'agent</h2>
+                                <button class="btn sm ghost" id="feed-clear" title="Vider le journal">🧹 Effacer</button>
+                            </div>
+                            <div class="feed" id="feed"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ RESERVATIONS ============ -->
+                <section class="page" id="page-reservations">
+                    <div class="card">
+                        <div class="section-head" style="padding:18px 22px 0; margin:0;">
+                            <h2>Réservations sur place</h2>
+                            <span class="muted" id="resa-stats">—</span>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table class="tbl">
+                                <thead><tr><th>Client</th><th>Nom</th><th>Date</th><th>Heure</th><th>Couverts</th><th>Statut</th><th></th></tr></thead>
+                                <tbody id="resa-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty" id="resa-empty" style="display:none;"><div class="big">📅</div>Aucune réservation pour le moment.</div>
+                    </div>
+                </section>
+
+                <!-- ============ ORDERS ============ -->
+                <section class="page" id="page-orders">
+                    <div class="card">
+                        <div class="section-head" style="padding:18px 22px 0; margin:0;">
+                            <h2>Commandes en livraison</h2>
+                            <span class="muted">💵 Paiement à la livraison</span>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table class="tbl">
+                                <thead><tr><th>Client</th><th>Plats</th><th>Adresse</th><th>Tél</th><th>Total</th><th>Statut</th><th></th></tr></thead>
+                                <tbody id="orders-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty" id="orders-empty" style="display:none;"><div class="big">🛵</div>Aucune commande pour le moment.</div>
+                    </div>
+                </section>
+
+                <!-- ============ MENU ============ -->
+                <section class="page" id="page-menu">
+                    <div class="grid grid-2">
+                        <div class="card card-pad">
+                            <h2 style="font-size:15px; margin-bottom:6px;">📷 Importer par photo (OCR)</h2>
+                            <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:14px;">Photographiez votre carte : l'IA la numérise automatiquement.</p>
+                            <div class="dropzone" id="menu-dropzone">
+                                <div class="big">📤</div>
+                                <div><b>Cliquez pour choisir une photo</b> de votre menu</div>
+                                <div style="font-size:11.5px; margin-top:4px;">JPG / PNG — l'extraction prend ~10s</div>
+                            </div>
+                            <input type="file" id="menu-file" accept="image/*" hidden>
+                            <div id="ocr-status" style="font-size:12.5px; color:var(--brand-d); margin-top:12px;"></div>
+                        </div>
+                        <div class="card card-pad">
+                            <h2 style="font-size:15px; margin-bottom:6px;">✍️ Édition manuelle</h2>
+                            <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:14px;">Ajoutez, modifiez ou supprimez des plats, puis enregistrez.</p>
+                            <button class="btn" id="menu-add">＋ Ajouter un plat</button>
+                            <button class="btn primary" id="menu-save" style="margin-left:8px;">💾 Enregistrer le menu</button>
+                        </div>
+                    </div>
+                    <div class="card card-pad" style="margin-top:16px;">
+                        <div id="menu-editor"></div>
+                        <div class="empty" id="menu-empty" style="display:none;"><div class="big">📖</div>Aucun plat. Importez une photo ou ajoutez-en un.</div>
+                    </div>
+                </section>
+
+                <!-- ============ CONFIG ============ -->
+                <section class="page" id="page-config">
+                    <div class="card card-pad" style="max-width:760px;">
+                        <h2 style="font-size:15px; margin-bottom:4px;">Identité &amp; agent</h2>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:18px;">Ces informations alimentent directement les réponses de l'assistant.</p>
+                        <div class="form-grid">
+                            <div class="field"><label>Nom du restaurant</label><input id="c-restaurantName" type="text"></div>
+                            <div class="field"><label>Nom de l'agent commercial</label><input id="c-agentName" type="text"><div class="hint">Le prénom que l'IA utilise face aux clients.</div></div>
+                            <div class="field"><label>Téléphone</label><input id="c-phone" type="text"></div>
+                            <div class="field"><label>Devise</label><input id="c-currency" type="text"></div>
+                            <div class="field" style="grid-column:1/-1;"><label>Adresse</label><input id="c-address" type="text"></div>
+                            <div class="field" style="grid-column:1/-1;"><label>Horaires</label><input id="c-hours" type="text"></div>
+                        </div>
+                        <h2 style="font-size:15px; margin:14px 0 4px;">Livraison &amp; paiement</h2>
+                        <div class="form-grid">
+                            <div class="field" style="grid-column:1/-1;"><label>Zone de livraison</label><input id="c-deliveryZones" type="text"></div>
+                            <div class="field"><label>Frais de livraison</label><input id="c-deliveryFee" type="number" step="0.5"></div>
+                            <div class="field"><label>Commande minimum</label><input id="c-minOrder" type="number"></div>
+                            <div class="field"><label>Délai moyen</label><input id="c-avgPrepTime" type="text"></div>
+                            <div class="field"><label>Note de paiement</label><input id="c-paymentNote" type="text"></div>
+                        </div>
+                        <button class="btn primary" id="config-save" style="margin-top:10px;">💾 Enregistrer la configuration</button>
+                    </div>
+                </section>
+
+                <!-- ============ BRAIN ============ -->
+                <section class="page" id="page-brain">
+                    <div class="card card-pad" style="max-width:900px;">
+                        <div class="section-head" style="margin:0 0 12px;">
+                            <h2>Cerveau IA — Prompt système</h2>
+                            <span class="muted" id="prompt-status"></span>
+                        </div>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:14px;">La personnalité de base de l'agent. Les infos restaurant et le menu sont injectés automatiquement par-dessus.</p>
+                        <textarea class="prompt" id="prompt-editor" placeholder="Chargement…"></textarea>
+                        <button class="btn primary" id="prompt-save" style="margin-top:12px;">💾 Enregistrer le prompt</button>
+                    </div>
+                </section>
+
+                <!-- ============ CONTROLS ============ -->
+                <section class="page" id="page-controls">
+
+                    <div class="card card-pad" style="max-width:680px; margin-bottom:16px;">
+                        <h2 style="font-size:15px; margin-bottom:12px;">📱 Connexion WhatsApp</h2>
+                        <div class="conn-line">
+                            <span class="big-dot" id="conn-dot"></span>
+                            <div><b id="conn-label">—</b><div style="font-size:12px; color:var(--text-faint);">Statut de la liaison WhatsApp</div></div>
+                        </div>
+                        <button class="btn" id="wa-relink">🔄 Déconnecter / Réafficher le QR</button>
+                        <button class="btn ghost" id="wa-showqr">📷 Voir le QR</button>
+                        <div style="font-size:11.5px; color:var(--text-faint); margin-top:10px;">⚠️ La déconnexion supprime la session actuelle : il faudra re‑scanner le QR avec le téléphone du restaurant.</div>
+                    </div>
+
+                    <div class="card card-pad" style="max-width:680px;">
+                        <h2 style="font-size:15px; margin-bottom:14px;">Modes de service</h2>
+                        <div class="toggle-row">
+                            <div><div class="t-name">🛑 Service interrompu</div><div class="t-desc">Cuisine à l'arrêt — l'agent n'accepte plus rien.</div></div>
+                            <label class="switch"><input type="checkbox" data-setting="panicMode"><span class="slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div><div class="t-name">⏸️ Commandes en pause</div><div class="t-desc">Cuisine saturée — plus de nouvelles commandes livraison.</div></div>
+                            <label class="switch"><input type="checkbox" data-setting="pauseOrders"><span class="slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div><div class="t-name">🐢 Forte affluence</div><div class="t-desc">Annonce un délai de livraison rallongé.</div></div>
+                            <label class="switch"><input type="checkbox" data-setting="slowMode"><span class="slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div><div class="t-name">💤 Restaurant fermé</div><div class="t-desc">Mode sommeil — l'agent ne répond plus.</div></div>
+                            <label class="switch"><input type="checkbox" data-setting="isSleeping"><span class="slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div><div class="t-name">💀 Kill switch</div><div class="t-desc">Coupe totalement l'IA (silence absolu).</div></div>
+                            <label class="switch"><input type="checkbox" data-setting="aiStopped"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <div class="card card-pad" style="max-width:680px; margin-top:16px;">
+                        <h2 style="font-size:15px; margin-bottom:10px;">🧪 Simulateur de conversation</h2>
+                        <div class="field"><textarea id="sim-input" rows="2" placeholder="Tape un message client (ex: Je voudrais réserver une table pour 4 ce soir)"></textarea></div>
+                        <button class="btn primary" id="sim-send">Envoyer au cerveau</button>
+                        <div id="sim-output" style="margin-top:14px; font-size:13.5px; white-space:pre-wrap; color:var(--text);"></div>
+                    </div>
+                </section>
+
+                <!-- ============ ADVANCED ============ -->
+                <section class="page" id="page-advanced">
+                    <!-- IA -->
+                    <div class="card card-pad" style="max-width:760px;">
+                        <h2 style="font-size:15px; margin-bottom:4px;">🤖 Comportement de l'IA</h2>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:16px;">Modèle, créativité et longueur des réponses générées.</p>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label>Modèle</label>
+                                <select id="a-aiModel">
+                                    <option value="gpt-4o">gpt-4o (qualité, vision)</option>
+                                    <option value="gpt-4o-mini">gpt-4o-mini (rapide, économique)</option>
+                                </select>
+                                <div class="hint">gpt-4o gère l'analyse d'images (OCR menu).</div>
+                            </div>
+                            <div class="field">
+                                <label>Température : <b id="a-temp-val">0.65</b></label>
+                                <input id="a-aiTemperature" type="range" min="0" max="1.2" step="0.05">
+                                <div class="hint">Bas = précis et constant · Haut = créatif.</div>
+                            </div>
+                            <div class="field">
+                                <label>Longueur max (tokens)</label>
+                                <input id="a-aiMaxTokens" type="number" min="50" max="4000" step="50">
+                            </div>
+                            <div class="field">
+                                <div class="toggle-row" style="padding-top:24px; border:none;">
+                                    <div><div class="t-name">⌨️ Simulation de frappe</div><div class="t-desc">Délai « humain » avant l'envoi.</div></div>
+                                    <label class="switch"><input type="checkbox" id="a-simulateTyping"><span class="slider"></span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timings -->
+                    <div class="card card-pad" style="max-width:760px; margin-top:16px;">
+                        <h2 style="font-size:15px; margin-bottom:4px;">⏱️ Timings &amp; cadence</h2>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:16px;">Réglage fin du comportement temporel de l'assistant.</p>
+                        <div class="form-grid">
+                            <div class="field"><label>Regroupement des messages (s)</label><input id="a-collectorDelaySec" type="number" min="0" max="60"><div class="hint">Attente pour fusionner plusieurs messages d'un même client.</div></div>
+                            <div class="field"><label>Attente max avant réponse (s)</label><input id="a-maxWaitSec" type="number" min="1" max="120"></div>
+                            <div class="field"><label>Cooldown message proactif (min)</label><input id="a-idleCooldownMin" type="number" min="1" max="1440"></div>
+                            <div class="field"><label>Anti-spam notifications (min)</label><input id="a-notifCooldownMin" type="number" min="0" max="240"></div>
+                        </div>
+                        <button class="btn primary" id="advanced-save">💾 Enregistrer les réglages</button>
+                    </div>
+
+                    <!-- Horaires de fermeture -->
+                    <div class="card card-pad" style="max-width:760px; margin-top:16px;">
+                        <h2 style="font-size:15px; margin-bottom:4px;">💤 Fermeture automatique (sommeil)</h2>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:16px;">Plage horaire où l'assistant ne répond plus automatiquement.</p>
+                        <div class="form-grid">
+                            <div class="field">
+                                <div class="toggle-row" style="padding-top:24px; border:none;">
+                                    <div><div class="t-name">Activer la fermeture auto</div></div>
+                                    <label class="switch"><input type="checkbox" id="sl-enabled"><span class="slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="field"></div>
+                            <div class="field"><label>Heure de fermeture</label><input id="sl-start" type="number" min="0" max="23"><div class="hint">0–23h</div></div>
+                            <div class="field"><label>Heure de réouverture</label><input id="sl-end" type="number" min="0" max="23"><div class="hint">0–23h</div></div>
+                        </div>
+                        <button class="btn primary" id="sleep-save">💾 Enregistrer les horaires</button>
+                    </div>
+
+                    <!-- Zone de danger -->
+                    <div class="card card-pad" style="max-width:760px; margin-top:16px; border-color:var(--red-soft); background:#fffafa;">
+                        <h2 style="font-size:15px; margin-bottom:14px; color:var(--red);">🧨 Zone de danger</h2>
+
+                        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px solid var(--border);">
+                            <div>
+                                <div class="t-name">🗑️ RESET DATA</div>
+                                <div class="t-desc">Efface réservations, commandes, fiches CRM, conversations et flux agent. Le menu, la config et les clés API sont conservés.</div>
+                            </div>
+                            <button class="btn danger" id="reset-data" style="flex:none;">RESET DATA</button>
+                        </div>
+
+                        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:12px 0;">
+                            <div>
+                                <div class="t-name">🔑 RESET API</div>
+                                <div class="t-desc">Supprime uniquement la clé OpenAI et les identifiants Telegram enregistrés ici (retour au .env). Aucune donnée n'est touchée.</div>
+                            </div>
+                            <button class="btn danger" id="reset-api" style="flex:none;">RESET API</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ INTEGRATIONS ============ -->
+                <section class="page" id="page-integrations">
+
+                    <!-- OpenAI -->
+                    <div class="card card-pad" style="max-width:760px;">
+                        <div class="section-head" style="margin:0 0 6px;">
+                            <h2>🤖 OpenAI (cerveau IA)</h2>
+                            <span class="pill" id="openai-state"><span class="pdot"></span> —</span>
+                        </div>
+                        <p style="font-size:12.5px; color:var(--text-faint); margin-bottom:14px;">Clé API utilisée pour les réponses, l'OCR du menu et la transcription audio.</p>
+                        <div class="field">
+                            <label>Clé API OpenAI</label>
+                            <input id="set-openai" type="password" placeholder="sk-… (laisser vide pour ne pas changer)">
+                            <div class="hint">Actuelle : <span id="openai-mask" class="mono">—</span> · source : <b id="openai-source">—</b></div>
+                        </div>
+                        <button class="btn primary" id="openai-save">💾 Enregistrer la clé</button>
+                        <button class="btn" id="openai-test">⚡ Tester la clé</button>
+                        <button class="btn ghost" id="openai-reset">↺ Revenir au .env</button>
+                    </div>
+
+                    <!-- Telegram -->
+                    <div class="card card-pad" style="max-width:760px; margin-top:16px;">
+                        <div class="section-head" style="margin:0 0 6px;">
+                            <h2>🔔 Telegram (notifications &amp; pilotage)</h2>
+                            <span class="pill" id="tg-state"><span class="pdot"></span> —</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+                            <span class="dot" id="tg-dot"></span>
+                            <div><b id="tg-name">—</b><div style="font-size:12px; color:var(--text-faint);" id="tg-info">Statut du bot</div></div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label>Token du bot (@BotFather)</label>
+                                <input id="set-tg-token" type="password" placeholder="123456:ABC… (laisser vide pour ne pas changer)">
+                                <div class="hint">Actuel : <span id="tg-mask" class="mono">—</span> · source : <b id="tg-source">—</b></div>
+                            </div>
+                            <div class="field">
+                                <label>Chat ID (destinataire des alertes)</label>
+                                <input id="set-tg-chat" type="text" placeholder="ex : 123456789">
+                            </div>
+                        </div>
+                        <button class="btn primary" id="tg-save">💾 Enregistrer &amp; reconnecter</button>
+                        <button class="btn" id="tg-test">📨 Envoyer un test</button>
+                        <button class="btn ghost" id="tg-reset">↺ Revenir au .env</button>
+                    </div>
+
+                    <!-- Coûts -->
+                    <div class="card card-pad" style="max-width:760px; margin-top:16px;">
+                        <h2 style="font-size:15px; margin-bottom:12px;">💸 Coûts OpenAI</h2>
+                        <div class="val" id="cost-total" style="font-size:24px; font-weight:750;">0,00 €</div>
+                        <div style="font-size:12px; color:var(--text-faint); margin-top:4px;" id="cost-tokens">— tokens utilisés</div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR WhatsApp -->
+    <div class="modal-overlay" id="qr-modal">
+        <div class="modal-box">
+            <button class="modal-close" id="qr-close" title="Fermer">✕</button>
+            <h3>📱 Connexion WhatsApp</h3>
+            <p>Sur le téléphone : WhatsApp → Appareils connectés → Associer un appareil, puis scannez ce code.</p>
+            <div class="qr-frame" id="qr-frame">
+                <div class="qr-wait"><div class="spinner"></div>Génération du QR…</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="vuepro.js"></script>
+</body>
+
+</html>

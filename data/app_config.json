@@ -1,0 +1,10 @@
+{
+  "aiModel": "gpt-4o",
+  "aiTemperature": 0.65,
+  "aiMaxTokens": 500,
+  "collectorDelaySec": 7,
+  "maxWaitSec": 20,
+  "idleCooldownMin": 120,
+  "notifCooldownMin": 5,
+  "simulateTyping": true
+}
